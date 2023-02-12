@@ -2,31 +2,22 @@ package main
 
 const a = "Hello, World!"
 
+// global scope variable declaration
 var (
-	b bool
+	// declaring and assigning a variable
+	b bool = true
 	c int
 	d string
 	e float64
 )
 
 func main() {
-	a := "X"
-
+	// shorthand declaration
+	f := "daniel"
 	println(a)
-
 	println(b)
-	b = true
-	println(b)
-
 	println(c)
-	c = 10
-	println(c)
-
 	println(d)
-	d = "Daniel"
-	println(d)
-
 	println(e)
-	e = 10.5
-	println(e)
+	println(f)
 }
