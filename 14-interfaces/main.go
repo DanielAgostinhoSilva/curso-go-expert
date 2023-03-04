@@ -44,7 +44,7 @@ func main() {
 	}
 
 	minhaEmpresa := Empresa{}
-	
+
 	Desativacao(daniel)
 	Desativacao(minhaEmpresa)
 }
