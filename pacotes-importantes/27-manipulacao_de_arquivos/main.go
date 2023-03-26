@@ -21,7 +21,6 @@ func main() {
 	}
 
 	fmt.Printf("Arquivo criado com sucesso! Tamanh: %d bytes\n", tamanho)
-	f.Close()
 
 	// leitura
 
