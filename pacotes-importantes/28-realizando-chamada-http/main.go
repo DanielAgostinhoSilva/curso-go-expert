@@ -21,5 +21,5 @@ func main() {
 	println(string(res))
 
 	req.Body.Close()
-	
+
 }
