@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -18,8 +17,9 @@ type Product struct {
 }
 
 type Category struct {
-	ID   int `gorm:"primaryKey"`
-	Name string
+	ID       int `gorm:"primaryKey"`
+	Name     string
+	Products []Product
 }
 
 type SerialNumber struct {
@@ -38,27 +38,40 @@ func main() {
 	db.AutoMigrate(&Product{}, &Category{}, &SerialNumber{})
 
 	// create category
-	category := Category{Name: "Eletronicos"}
-	db.Create(&category)
+	//category := Category{Name: "Eletronicos"}
+	//db.Create(&category)
 
 	// create procut
-	product := Product{
-		Name:       "Mouse",
-		Price:      1000.00,
-		CategoryID: category.ID,
-	}
-	db.Create(&product)
+	//product := Product{
+	//	Name:       "Mouse",
+	//	Price:      1000.00,
+	//	CategoryID: category.ID,
+	//}
+	//db.Create(&product)
 
 	// create serial number
-	db.Create(&SerialNumber{
-		Number:    "12345",
-		ProductID: product.ID,
-	})
+	//db.Create(&SerialNumber{
+	//	Number:    "12345",
+	//	ProductID: product.ID,
+	//})
 
-	var products []Product
-	db.Preload("Category").Preload("SerialNumber").Find(&products)
-	for _, product := range products {
-		json, _ := json.MarshalIndent(product, "", "  ")
-		fmt.Println(string(json))
+	//var products []Product
+	//db.Preload("Category").Preload("SerialNumber").Find(&products)
+	//for _, product := range products {
+	//	json, _ := json.MarshalIndent(product, "", "  ")
+	//	fmt.Println(string(json))
+	//}
+
+	var categories []Category
+	err = db.Model(&Category{}).Preload("Products").Find(&categories).Error
+	if err != nil {
+		panic(err)
+	}
+	for _, category := range categories {
+		fmt.Println("Categoria: ", category.Name)
+		for _, product := range category.Products {
+			fmt.Println("Produto: ", product.Name)
+		}
+		fmt.Println("")
 	}
 }
