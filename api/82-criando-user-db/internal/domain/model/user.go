@@ -1,12 +1,12 @@
 package model
 
 import (
-	"github.com/DanielAgostinhoSilva/curso-go-expert/api/78-criando-entidade-user/pkg/entity"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	ID       entity.ID `json:"id"`
+	ID       uuid.UUID `json:"id"`
 	Name     string    `json:"name"`
 	Email    string    `json:"email"`
 	Password string    `json:"-"`
@@ -18,7 +18,7 @@ func NewUser(name, email, password string) (*User, error) {
 		return nil, err
 	}
 	return &User{
-		ID:       entity.NewId(),
+		ID:       uuid.New(),
 		Name:     name,
 		Email:    email,
 		Password: string(hash),

@@ -1,11 +1,27 @@
 package database
 
-import "gorm.io/gorm"
+import (
+	"github.com/DanielAgostinhoSilva/curso-go-expert/api/82-criando-user-db/internal/domain/model"
+	"gorm.io/gorm"
+)
 
-type User struct {
+type UserAdapter struct {
 	DB *gorm.DB
 }
 
-func NewUser(db *gorm.DB) *User {
-	return &User{DB: db}
+func NewUserAdapter(db *gorm.DB) *UserAdapter {
+	return &UserAdapter{DB: db}
+}
+
+func (adapter *UserAdapter) Save(user *model.User) error {
+	return adapter.DB.Create(user).Error
+}
+
+func (adapter *UserAdapter) FindByEmail(email string) (*model.User, error) {
+	var user model.User
+	err := adapter.DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
