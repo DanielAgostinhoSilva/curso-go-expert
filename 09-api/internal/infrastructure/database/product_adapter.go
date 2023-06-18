@@ -39,3 +39,17 @@ func (adapter *ProductAdapter) Delete(id uuid.UUID) error {
 	}
 	return adapter.DB.Delete(product).Error
 }
+
+func (adapter *ProductAdapter) FindAll(page, limite int, sort string) ([]model.Product, error) {
+	var products []model.Product
+	var err error
+	if sort != "" && sort != "asc" && sort != "desc" {
+		sort = "asc"
+	}
+	if page != 0 && limite != 0 {
+		err = adapter.DB.Limit(limite).Offset((page - 1) * limite).Order("created_at " + sort).Find(&products).Error
+	} else {
+		err = adapter.DB.Order("created_at " + sort).Find(&products).Error
+	}
+	return products, err
+}
