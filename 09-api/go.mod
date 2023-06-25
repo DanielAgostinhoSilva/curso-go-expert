@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	github.com/DanielAgostinhoSilva/curso-go-expert/api/77-criando-arquivos-de-configuracao v0.0.0-20230613003448-b4419e172266
-	github.com/DanielAgostinhoSilva/curso-go-expert/api/78-criando-entidade-user v0.0.0-20230614000309-48687986e948
 	github.com/go-chi/jwtauth v1.2.0
 	github.com/google/uuid v1.1.2
 	github.com/spf13/viper v1.16.0

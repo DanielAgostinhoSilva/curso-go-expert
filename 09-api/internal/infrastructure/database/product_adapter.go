@@ -10,7 +10,7 @@ type ProductAdapter struct {
 	DB *gorm.DB
 }
 
-func NewProduct(db *gorm.DB) *ProductAdapter {
+func NewProductAdapter(db *gorm.DB) *ProductAdapter {
 	return &ProductAdapter{DB: db}
 }
 
