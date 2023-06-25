@@ -63,3 +63,66 @@ func TestFinalAllProducts(t *testing.T) {
 	assert.Equal(t, "Product 21", products[0].Name)
 	assert.Equal(t, "Product 23", products[2].Name)
 }
+
+func TestProductAdapter_FindById(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":file::memory:"), &gorm.Config{})
+	if err != nil {
+		t.Error(err)
+	}
+	db.AutoMigrate(&model.Product{})
+	product, err := model.NewProduct("Product 1", 10.0)
+	assert.NoError(t, err)
+	adapter := NewProductAdapter(db)
+	err = adapter.Save(product)
+	assert.NoError(t, err)
+	productFound, err := adapter.FindById(product.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, product.Name, productFound.Name)
+	assert.Equal(t, product.Price, productFound.Price)
+}
+
+func TestProductAdapter_Update(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":file::memory:"), &gorm.Config{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	db.AutoMigrate(&model.Product{})
+	adapter := NewProductAdapter(db)
+
+	product, err := model.NewProduct("Product 1", 10.0)
+	assert.NoError(t, err)
+	err = adapter.Save(product)
+	assert.NoError(t, err)
+
+	product.Name = "Product 2"
+	product.Price = 20.0
+	err = adapter.Update(product)
+	assert.NoError(t, err)
+
+	productFound, err := adapter.FindById(product.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, productFound.Name, product.Name)
+	assert.Equal(t, productFound.Price, product.Price)
+}
+
+func TestProductAdapter_Delete(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":file::memory:"), &gorm.Config{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	db.AutoMigrate(&model.Product{})
+	adapter := NewProductAdapter(db)
+
+	product, err := model.NewProduct("Product 1", 10.0)
+	assert.NoError(t, err)
+	err = adapter.Save(product)
+	assert.NoError(t, err)
+
+	err = adapter.Delete(product.ID)
+	assert.NoError(t, err)
+
+	_, err = adapter.FindById(product.ID)
+	assert.Error(t, err)
+}
