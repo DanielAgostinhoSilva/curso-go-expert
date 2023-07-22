@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/DanielAgostinhoSilva/curso-go-expert/09-api/configs"
+	_ "github.com/DanielAgostinhoSilva/curso-go-expert/09-api/docs"
 	"github.com/DanielAgostinhoSilva/curso-go-expert/09-api/internal/domain/model"
 	"github.com/DanielAgostinhoSilva/curso-go-expert/09-api/internal/infrastructure/database"
 	"github.com/DanielAgostinhoSilva/curso-go-expert/09-api/internal/infrastructure/webserver/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/jwtauth"
-	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
-	"github.com/swaggo/http-swagger/v2"
+	"github.com/swaggo/http-swagger"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
@@ -28,8 +28,8 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:8080
-// @BasePath  /
+// @host localhost:8000
+// @BasePath /
 // @securityDefinitions.apikey  ApiKeyAuth
 // @in header
 // @name Authorization

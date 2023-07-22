@@ -9,8 +9,8 @@ require (
 	github.com/jinzhu/copier v0.3.5
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.3
+	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/http-swagger/example/go-chi v0.0.0-20230327134356-bc837951e6c7
-	github.com/swaggo/http-swagger/v2 v2.0.1
 	github.com/swaggo/swag v1.16.1
 	golang.org/x/crypto v0.9.0
 	gorm.io/driver/sqlite v1.5.2
@@ -47,7 +47,8 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	github.com/swaggo/files/v2 v2.0.0 // indirect
+	github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe // indirect
+	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/tools v0.7.0 // indirect
