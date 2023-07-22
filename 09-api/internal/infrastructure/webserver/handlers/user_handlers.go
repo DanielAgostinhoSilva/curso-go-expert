@@ -24,22 +24,34 @@ func NewUserHandler(db database.UserAdapter) *UserHandler {
 	}
 }
 
+// GetJWT godoc
+// @Summary      Get a user JWT
+// @Description  Get a user JWT
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.JWTUserInput true "user credentials"
+// @Success      200 {object} dto.TokenModel
+// @Failure      401 {object} Error
+// @Failure      404 {object} Error
+// @Failure      500 {object} Error
+// @Router       /users/generate_token [post]
 func (h *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
 	jwtExpiresIn := r.Context().Value("jwtExpiresIn").(int)
 	var jwtUserInput dto.JWTUserInput
 	err := json.NewDecoder(r.Body).Decode(&jwtUserInput)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		handlerError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	user, err := h.UserDB.FindByEmail(jwtUserInput.Email)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		handlerError(w, err.Error(), http.StatusNotFound)
 		return
 	}
 	if !user.ValidatePassword(jwtUserInput.Password) {
-		w.WriteHeader(http.StatusUnauthorized)
+		handlerError(w, "Invalid user or password", http.StatusUnauthorized)
 		return
 	}
 
@@ -71,24 +83,24 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var userInput dto.UserInput
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		error := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(error)
+		handlerError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	user, err := model.NewUser(userInput.Name, userInput.Email, userInput.Password)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		error := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(error)
+		handlerError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = h.UserDB.Save(user)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		error := Error{Message: err.Error()}
-		json.NewEncoder(w).Encode(error)
+		handlerError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+func handlerError(w http.ResponseWriter, msg string, httpStatus int) {
+	w.WriteHeader(httpStatus)
+	error := Error{Message: msg}
+	json.NewEncoder(w).Encode(error)
 }
