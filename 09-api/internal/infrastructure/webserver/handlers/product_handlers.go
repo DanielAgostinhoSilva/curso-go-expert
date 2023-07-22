@@ -22,7 +22,7 @@ func NewProductHandler(db database.ProductAdapter) *ProductHandler {
 	}
 }
 
-// CreateProduct Create user godoc
+// CreateProduct godoc
 // @Summary      Create Product
 // @Description  Create Product
 // @Tags         products
@@ -54,6 +54,19 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// GetProduct godoc
+// @Summary      Get a Product
+// @Description  Get a Product
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param		 id	path string	true "product ID" Format(uuid)
+// @Success      200 {object} dto.ProductModel
+// @Failure      401 {object} Error
+// @Failure      404 {object} Error
+// @Failure      500 {object} Error
+// @Router       /products/{id} [get]
+// @Security ApiKeyAuth
 func (h *ProductHandler) GetProduct(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
@@ -111,6 +124,21 @@ func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(productsModel)
 }
 
+// UpdateProduct godoc
+// @Summary      Update a Product
+// @Description  Update a Product
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        id path string true "product ID" Format(uuid)
+// @Param        request body dto.ProductInput true "user request"
+// @Success      200
+// @Failure      400  {object} Error
+// @Failure      401  {object} Error
+// @Failure      404  {object} Error
+// @Failure      500  {object} Error
+// @Router       /products/{id} [put]
+// @Security ApiKeyAuth
 func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
@@ -141,6 +169,20 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// DeleteProduct godoc
+// @Summary      Delete a Product
+// @Description  Delete a Product
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        id path string true "product ID" Format(uuid)
+// @Success      204
+// @Failure      400  {object} Error
+// @Failure      401  {object} Error
+// @Failure      404  {object} Error
+// @Failure      500  {object} Error
+// @Router       /products/{id} [delete]
+// @Security ApiKeyAuth
 func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
