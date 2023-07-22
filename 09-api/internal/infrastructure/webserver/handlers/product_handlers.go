@@ -22,21 +22,33 @@ func NewProductHandler(db database.ProductAdapter) *ProductHandler {
 	}
 }
 
+// CreateProduct Create user godoc
+// @Summary      Create Product
+// @Description  Create Product
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.ProductInput true "user request"
+// @Success      201
+// @Failure      400  {object} Error
+// @Failure      500  {object} Error
+// @Router       /products [post]
+// @Security ApiKeyAuth
 func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	var productInput dto.ProductInput
 	err := json.NewDecoder(r.Body).Decode(&productInput)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		HandlerError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	product, err := model.NewProduct(productInput.Name, productInput.Price)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		HandlerError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = h.ProductDB.Save(product)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		HandlerError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
@@ -62,6 +74,20 @@ func (h *ProductHandler) GetProduct(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(product)
 }
 
+// GetProducts godoc
+// @Summary      List all Product
+// @Description  Get all Product
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Param		 page	query	string	false	"page number"
+// @Param		 limit	query	string	false	"limit"
+// @Success      200 {array} dto.ProductModel
+// @Failure      401 {object} Error
+// @Failure      404 {object} Error
+// @Failure      500 {object} Error
+// @Router       /products [get]
+// @Security ApiKeyAuth
 func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	if err != nil {

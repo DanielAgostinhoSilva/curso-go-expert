@@ -42,16 +42,16 @@ func (h *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 	var jwtUserInput dto.JWTUserInput
 	err := json.NewDecoder(r.Body).Decode(&jwtUserInput)
 	if err != nil {
-		handlerError(w, err.Error(), http.StatusBadRequest)
+		HandlerError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	user, err := h.UserDB.FindByEmail(jwtUserInput.Email)
 	if err != nil {
-		handlerError(w, err.Error(), http.StatusNotFound)
+		HandlerError(w, err.Error(), http.StatusNotFound)
 		return
 	}
 	if !user.ValidatePassword(jwtUserInput.Password) {
-		handlerError(w, "Invalid user or password", http.StatusUnauthorized)
+		HandlerError(w, "Invalid user or password", http.StatusUnauthorized)
 		return
 	}
 
@@ -83,24 +83,18 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var userInput dto.UserInput
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
-		handlerError(w, err.Error(), http.StatusBadRequest)
+		HandlerError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	user, err := model.NewUser(userInput.Name, userInput.Email, userInput.Password)
 	if err != nil {
-		handlerError(w, err.Error(), http.StatusBadRequest)
+		HandlerError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = h.UserDB.Save(user)
 	if err != nil {
-		handlerError(w, err.Error(), http.StatusInternalServerError)
+		HandlerError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
-}
-
-func handlerError(w http.ResponseWriter, msg string, httpStatus int) {
-	w.WriteHeader(httpStatus)
-	error := Error{Message: msg}
-	json.NewEncoder(w).Encode(error)
 }
