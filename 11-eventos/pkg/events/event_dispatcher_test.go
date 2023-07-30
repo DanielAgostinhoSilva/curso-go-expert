@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"sync"
 	"testing"
 	"time"
 )
@@ -29,7 +30,7 @@ type TestEventHandler struct {
 	ID int
 }
 
-func (t *TestEventHandler) Handle(event EventInterface) {
+func (t *TestEventHandler) Handle(event EventInterface, wg *sync.WaitGroup) {
 
 }
 
@@ -118,20 +119,29 @@ type MockHandler struct {
 	mock.Mock
 }
 
-func (m *MockHandler) Handle(event EventInterface) {
+func (m *MockHandler) Handle(event EventInterface, wg *sync.WaitGroup) {
 	m.Called(event)
+	wg.Done()
 }
 
 func (suite *EventDispatcherTestSuite) TestEventDispatcher_Dispatch() {
 	mh := &MockHandler{}
 	mh.On("Handle", &suite.event)
 
+	mh2 := &MockHandler{}
+	mh2.On("Handle", &suite.event)
+
 	err := suite.EventDispatcher.Register(suite.event.GetName(), mh)
+	suite.Nil(err)
+
+	err = suite.EventDispatcher.Register(suite.event.GetName(), mh2)
 	suite.Nil(err)
 
 	suite.EventDispatcher.Dispatch(&suite.event)
 	mh.AssertExpectations(suite.T())
+	mh2.AssertExpectations(suite.T())
 	mh.AssertNumberOfCalls(suite.T(), "Handle", 1)
+	mh2.AssertNumberOfCalls(suite.T(), "Handle", 1)
 }
 
 func (suite *EventDispatcherTestSuite) TestEventDispatcher_Remove() {
