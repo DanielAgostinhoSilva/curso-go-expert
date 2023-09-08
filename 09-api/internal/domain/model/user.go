@@ -10,6 +10,7 @@ type User struct {
 	Name     string    `json:"name"`
 	Email    string    `json:"email"`
 	Password string    `json:"-"`
+	abc      string
 }
 
 func NewUser(name, email, password string) (*User, error) {
