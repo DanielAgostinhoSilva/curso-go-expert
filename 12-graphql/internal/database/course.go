@@ -23,7 +23,7 @@ func (props Course) Create(name, description, categoryId string) (Course, error)
 		id, name, description, categoryId,
 	)
 	if err != nil {
-		return nil, err
+		return Course{}, err
 	}
 	return Course{
 		ID:          id,
