@@ -54,3 +54,25 @@ func (props Course) FindAll() ([]Course, error) {
 	}
 	return courses, err
 }
+
+func (props Course) FindByCategoryId(id string) ([]Course, error) {
+	rows, err := props.db.Query("SELECT id, name, description, category_id FROM courses WHERE category_id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var courses []Course
+	for rows.Next() {
+		var courseId, name, description, categoryId string
+		if err := rows.Scan(&courseId, &name, &description, &categoryId); err != nil {
+			return nil, err
+		}
+		courses = append(courses, Course{
+			ID:          courseId,
+			Name:        name,
+			Description: description,
+			CategoryID:  categoryId,
+		})
+	}
+	return courses, err
+}
