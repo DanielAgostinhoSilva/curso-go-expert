@@ -5,6 +5,7 @@ import (
 	"github.com/DanielAgostinhoSilva/curso-go-expert/14-gRPC/internal/database"
 	"github.com/DanielAgostinhoSilva/curso-go-expert/14-gRPC/internal/pb"
 	"github.com/DanielAgostinhoSilva/curso-go-expert/14-gRPC/internal/service"
+	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
