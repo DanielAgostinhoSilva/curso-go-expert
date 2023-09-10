@@ -27,3 +27,23 @@ func (props *CategoryService) CreateCategory(ctx context.Context, in *pb.CreateC
 		Description: category.Description,
 	}, err
 }
+
+func (props *CategoryService) ListCategory(context.Context, *pb.Blank) (*pb.CategoryList, error) {
+	categories, err := props.CategoryDB.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var categoriesPB []*pb.Category
+	for _, category := range categories {
+		categoriesPB = append(categoriesPB, &pb.Category{
+			Id:          category.ID,
+			Name:        category.Name,
+			Description: category.Description,
+		})
+	}
+
+	return &pb.CategoryList{
+		Categories: categoriesPB,
+	}, nil
+}
