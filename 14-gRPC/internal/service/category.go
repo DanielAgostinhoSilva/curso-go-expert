@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/DanielAgostinhoSilva/curso-go-expert/14-gRPC/internal/database"
 	"github.com/DanielAgostinhoSilva/curso-go-expert/14-gRPC/internal/pb"
+	"io"
 )
 
 type CategoryService struct {
@@ -58,4 +59,26 @@ func (props *CategoryService) GetCategory(ctx context.Context, in *pb.CategoryGe
 		Name:        category.Name,
 		Description: category.Description,
 	}, err
+}
+
+func (props *CategoryService) CreateCategoryStream(stream pb.CategoryService_CreateCategoryStreamServer) error {
+	var categories pb.CategoryList
+	for {
+		category, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(&categories)
+		}
+		if err != nil {
+			return err
+		}
+		categoryResult, err := props.CategoryDB.Create(category.Name, category.Description)
+		if err != nil {
+			return err
+		}
+		categories.Categories = append(categories.Categories, &pb.Category{
+			Id:          categoryResult.ID,
+			Name:        categoryResult.Name,
+			Description: categoryResult.Description,
+		})
+	}
 }
