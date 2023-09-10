@@ -27,6 +27,6 @@ func (props *CategoryService) CreateCategory(ctx context.Context, in *pb.CreateC
 			Description: category.Description,
 		},
 	}
-	
+
 	return categoryResponse, err
 }
