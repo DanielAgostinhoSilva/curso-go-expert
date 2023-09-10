@@ -96,7 +96,7 @@ func (props *CategoryService) CreateCategoryStreamBidirectional(stream pb.Catego
 		if err != nil {
 			return err
 		}
-		err = stream.SendMsg(&pb.Category{
+		err = stream.Send(&pb.Category{
 			Id:          categoryResult.ID,
 			Name:        categoryResult.Name,
 			Description: categoryResult.Description,

@@ -91,7 +91,7 @@ func (c *categoryServiceClient) CreateCategoryStreamBidirectional(ctx context.Co
 
 type CategoryService_CreateCategoryStreamBidirectionalClient interface {
 	Send(*CreateCategoryRequest) error
-	CloseAndRecv() (*Category, error)
+	Recv() (*Category, error)
 	grpc.ClientStream
 }
 
@@ -103,10 +103,7 @@ func (x *categoryServiceCreateCategoryStreamBidirectionalClient) Send(m *CreateC
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *categoryServiceCreateCategoryStreamBidirectionalClient) CloseAndRecv() (*Category, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
+func (x *categoryServiceCreateCategoryStreamBidirectionalClient) Recv() (*Category, error) {
 	m := new(Category)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -225,7 +222,7 @@ func _CategoryService_CreateCategoryStreamBidirectional_Handler(srv interface{},
 }
 
 type CategoryService_CreateCategoryStreamBidirectionalServer interface {
-	SendAndClose(*Category) error
+	Send(*Category) error
 	Recv() (*CreateCategoryRequest, error)
 	grpc.ServerStream
 }
@@ -234,7 +231,7 @@ type categoryServiceCreateCategoryStreamBidirectionalServer struct {
 	grpc.ServerStream
 }
 
-func (x *categoryServiceCreateCategoryStreamBidirectionalServer) SendAndClose(m *Category) error {
+func (x *categoryServiceCreateCategoryStreamBidirectionalServer) Send(m *Category) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -311,6 +308,7 @@ var CategoryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "CreateCategoryStreamBidirectional",
 			Handler:       _CategoryService_CreateCategoryStreamBidirectional_Handler,
+			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},
