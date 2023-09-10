@@ -47,3 +47,15 @@ func (props *CategoryService) ListCategory(context.Context, *pb.Blank) (*pb.Cate
 		Categories: categoriesPB,
 	}, nil
 }
+
+func (props *CategoryService) GetCategory(ctx context.Context, in *pb.CategoryGetRequest) (*pb.Category, error) {
+	category, err := props.CategoryDB.FindByCategoryId(in.Id)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.Category{
+		Id:          category.ID,
+		Name:        category.Name,
+		Description: category.Description,
+	}, err
+}

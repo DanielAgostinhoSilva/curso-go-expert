@@ -40,6 +40,20 @@ func (props *Category) FindAll() ([]Category, error) {
 	return categories, err
 }
 
+func (props *Category) FindByCategoryId(categoryId string) (Category, error) {
+	var id, name, description string
+	query := "SELECT id, name, description FROM categories WHERE id = $1"
+	err := props.db.QueryRow(query, categoryId).Scan(&id, &name, &description)
+	if err != nil {
+		return Category{}, err
+	}
+	return Category{
+		ID:          id,
+		Name:        name,
+		Description: description,
+	}, err
+}
+
 func (props *Category) FindByCourseId(courseID string) (Category, error) {
 	var id, name, description string
 	query := "SELECT c.id, c.name, c.description FROM categories c JOIN courses co ON c.id = co.category_id WHERE co.id = $1"
