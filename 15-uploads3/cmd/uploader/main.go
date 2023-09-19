@@ -25,7 +25,7 @@ func init() {
 	})
 
 	// Crie um novo cliente S3
-	s3Client := s3.New(sess)
+	s3Client = s3.New(sess)
 	s3Bucket = "goexpert-bucket-exemplo"
 
 	// Crie um novo bucket
@@ -41,27 +41,31 @@ func init() {
 }
 
 func main() {
-	dir, err := os.Open("./tmp")
+	files, err := os.ReadDir("./tmp")
 	if err != nil {
+		log.Printf("Error reading directory: %s\n", err)
 		panic(err)
 	}
-	defer dir.Close()
+	for _, file := range files {
+		uploadFile(file.Name())
+	}
 }
 
 func uploadFile(fileName string) {
 	filePath := fmt.Sprintf("./tmp/%s", fileName)
 	log.Printf("Uploading file %s to bucket %s\n", filePath, s3Bucket)
-	file, err := os.Open(filePath)
+	f, err := os.Open(filePath)
 	if err != nil {
 		log.Printf("Error opening file: %s\n", filePath)
 		return
 	}
-	defer file.Close()
-	s3Client.PutObject(&s3.PutObjectInput{
+	defer f.Close()
+	s3Input := &s3.PutObjectInput{
 		Bucket: aws.String(s3Bucket),
 		Key:    aws.String(fileName),
-		Body:   file,
-	})
+		Body:   f,
+	}
+	_, err = s3Client.PutObject(s3Input)
 	if err != nil {
 		log.Printf("Error uploading file: %s\n", filePath)
 		return
