@@ -49,15 +49,28 @@ func main() {
 		panic(err)
 	}
 	uploadControl := make(chan struct{}, 10)
+	errorFileUpload := make(chan string, 10)
+
+	go func() {
+		for {
+			select {
+			case fileName := <-errorFileUpload:
+				uploadControl <- struct{}{}
+				wg.Add(1)
+				go uploadFile(fileName, uploadControl, errorFileUpload)
+			}
+		}
+	}()
+
 	for _, file := range files {
 		wg.Add(1)
 		uploadControl <- struct{}{}
-		go uploadFile(file.Name(), uploadControl)
+		go uploadFile(file.Name(), uploadControl, errorFileUpload)
 	}
 	wg.Wait()
 }
 
-func uploadFile(fileName string, uploadControl <-chan struct{}) {
+func uploadFile(fileName string, uploadControl <-chan struct{}, errorFileUpload chan<- string) {
 	wg.Done()
 	filePath := fmt.Sprintf("./tmp/%s", fileName)
 	log.Printf("Uploading file %s to bucket %s\n", filePath, s3Bucket)
@@ -65,6 +78,7 @@ func uploadFile(fileName string, uploadControl <-chan struct{}) {
 	if err != nil {
 		<-uploadControl
 		log.Printf("Error opening file: %s\n", filePath)
+		errorFileUpload <- filePath
 		return
 	}
 	defer f.Close()
@@ -77,6 +91,7 @@ func uploadFile(fileName string, uploadControl <-chan struct{}) {
 	if err != nil {
 		<-uploadControl
 		log.Printf("Error uploading file: %s\n", filePath)
+		errorFileUpload <- filePath
 		return
 	}
 	log.Printf("File %s uploaded successfully\n", filePath)
